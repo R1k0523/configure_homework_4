@@ -6,7 +6,7 @@ directives ::= directive directives | empty
 directive ::= simple_directive | block_directive
 names ::= name names | empty
 simple_directive ::= name names ";"
-simple_directive ::= name names "{" directives "}"
+block_directive ::= name names "{" directives "}"
 """
 
 class ConfLexer(Lexer):
@@ -31,7 +31,7 @@ class ConfParser(Parser):
     def directives(self, p):
         return []
 
-    @_('simple_directive', 'block_directives')
+    @_('simple_directive', 'block_directive')
     def directive(self, p):
         return p[0]
 
@@ -40,7 +40,7 @@ class ConfParser(Parser):
         return dict(type="simple", args=[p.name] + p.names, ctx=[])
 
     @_('name names BEGIN directives END')
-    def block_directives(self, p):
+    def block_directive(self, p):
         return dict(type="block", args=[p.name] + p.names, ctx=p.directives)
 
     @_('name names')
